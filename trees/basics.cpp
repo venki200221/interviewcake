@@ -1,7 +1,7 @@
 #include<iostream>
 #include<vector>
 #include<stdio.h>
-
+#include<queue>
 using namespace std;
 
 
@@ -146,6 +146,101 @@ struct node *Delete(struct node *p,int key){
     }
 return p;
 }
+
+// Zig-Zag traversal
+
+vector <int> zigzag(struct node *p){
+    vector <int> result;
+    if(root==NULL){
+        return result;
+    }
+    queue <node *>q;
+    q.push(p);
+    bool leftToRight=true;
+
+    while(!q.empty()){
+        int size=q.size();
+        vector <int> ans(size);
+        for(int i=0;i<size;i++){
+            struct node *frontNode=q.front();
+            q.pop();
+            int index=leftToRight?i:size-i-1;
+            ans[index]=frontNode->data;
+            if(frontNode->lchild){
+                q.push(p->lchild);
+            }
+            if(frontNode->rchild){
+                q.push(p->rchild);
+            }
+        }
+        leftToRight=!leftToRight;
+        for(auto i:ans){
+            result.push_back(i);
+        }
+    }
+   return result;
+}
+
+// boundary level traversal
+
+void traverseLeft(struct node *p,vector<int>&ans){
+    if(p==NULL){
+        return ;
+    }
+    else if((p->lchild == NULL && p->rchild == NULL) ){
+        return;
+    }
+    ans.push_back(p->data);
+    if(p->lchild){
+        traverseLeft(p->lchild,ans);
+    }
+    if(p->rchild){
+        traverseLeft(p->rchild,ans);
+    }
+
+}
+
+void traverseRight(struct node *p,vector<int> &ans){
+    if(p==NULL){
+        return;
+    }
+    if(p->lchild==NULL && p->rchild==NULL){
+        return;
+    }
+    if(p->rchild){
+        traverseRight(p->rchild,ans);
+    }
+    else{
+        traverseLeft(p->lchild,ans);
+    }
+    ans.push_back(p->data);
+}
+
+void traverseLeaf(struct node *p,vector <int> & ans){
+    if(p==NULL){
+        return ;
+    }
+    if(p->lchild == NULL && p->rchild == NULL){
+        ans.push_back(p->data);
+        return;
+    }
+    traverseLeaf(p->lchild,ans);
+    traverseLeaf(p->rchild,ans);
+}
+
+vector <int> boundary(struct node *p){
+    vector <int> ans;
+    if(root==NULL){
+        return ans;
+    }
+    ans.push_back(p->data);
+    traverseLeft(p->lchild,ans);
+    traverseLeaf(p->lchild,ans);
+    traverseLeaf(p->rchild,ans);
+    traverseRight(p->rchild,ans);
+   return ans;
+}
+
 
 int main(){
 // insert(root,10);
